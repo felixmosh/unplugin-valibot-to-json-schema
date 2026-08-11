@@ -29,6 +29,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
   },
 });
 
-export const unplugin = /* #__PURE__ */ createUnplugin(unpluginFactory);
+const unplugin = /* #__PURE__ */ createUnplugin(unpluginFactory);
 
 export default unplugin;
