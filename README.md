@@ -4,6 +4,8 @@
 [![Tests](https://github.com/felixmosh/unplugin-valibot-to-json-schema/actions/workflows/ci.yml/badge.svg)](https://www.npmjs.com/package/unplugin-valibot-to-json-schema)
 ![stability](https://img.shields.io/badge/stability-experimental-black)
 
+> **Experimental**: This plugin is still being hardened. APIs and behavior may change between minor versions.
+
 A build-time transformer that replaces `toJsonSchema(...)` calls with the serialized [JSON Schema](https://json-schema.org/) output, so schemas never ship to the client or execute at runtime.
 
 ## Why?
