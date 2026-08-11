@@ -1,0 +1,154 @@
+{
+  "name": "unplugin-valibot-to-json-schema",
+  "version": "0.1.0",
+  "description": "Transform Valibot schemas to JSON Schema at build time",
+  "keywords": [
+    "code-generation",
+    "json-schema",
+    "rspack",
+    "schema",
+    "transform",
+    "unplugin",
+    "valibot",
+    "vite",
+    "webpack"
+  ],
+  "homepage": "https://github.com/felixmosh/unplugin-valibot-to-json-schema#readme",
+  "bugs": {
+    "url": "https://github.com/felixmosh/unplugin-valibot-to-json-schema/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felixmosh/unplugin-valibot-to-json-schema.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./astro": {
+      "types": "./dist/astro.d.mts",
+      "import": "./dist/astro.mjs",
+      "require": "./dist/astro.cjs"
+    },
+    "./esbuild": {
+      "types": "./dist/esbuild.d.mts",
+      "import": "./dist/esbuild.mjs",
+      "require": "./dist/esbuild.cjs"
+    },
+    "./farm": {
+      "types": "./dist/farm.d.mts",
+      "import": "./dist/farm.mjs",
+      "require": "./dist/farm.cjs"
+    },
+    "./nuxt": {
+      "types": "./dist/nuxt.d.mts",
+      "import": "./dist/nuxt.mjs",
+      "require": "./dist/nuxt.cjs"
+    },
+    "./rollup": {
+      "types": "./dist/rollup.d.mts",
+      "import": "./dist/rollup.mjs",
+      "require": "./dist/rollup.cjs"
+    },
+    "./rspack": {
+      "types": "./dist/rspack.d.mts",
+      "import": "./dist/rspack.mjs",
+      "require": "./dist/rspack.cjs"
+    },
+    "./types": {
+      "types": "./dist/types.d.mts",
+      "import": "./dist/types.mjs",
+      "require": "./dist/types.cjs"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.mts",
+      "import": "./dist/vite.mjs",
+      "require": "./dist/vite.cjs"
+    },
+    "./webpack": {
+      "types": "./dist/webpack.d.mts",
+      "import": "./dist/webpack.mjs",
+      "require": "./dist/webpack.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown -w",
+    "lint": "oxlint .",
+    "release": "bumpp",
+    "start": "tsx src/index.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@babel/parser": "^8.0.4",
+    "@swc/core": "^1.15.47",
+    "magic-string": "^1.1.0",
+    "unplugin": "^3.3.0"
+  },
+  "devDependencies": {
+    "@nuxt/kit": "^3.17.4",
+    "@nuxt/schema": "^3.17.4",
+    "@types/node": "^22.15.21",
+    "@valibot/to-json-schema": "^1.7.1",
+    "bumpp": "^11.0.1",
+    "oxfmt": "^0.47.0",
+    "oxlint": "^1.62.0",
+    "rollup": "^4.60.3",
+    "tsdown": "^0.21.10",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "valibot": "^1.4.2",
+    "vite": "^6.4.2",
+    "vitest": "^4.1.5",
+    "webpack": "^5.106.2"
+  },
+  "peerDependencies": {
+    "@valibot/to-json-schema": "^1.7.1",
+    "@farmfe/core": ">=1",
+    "@nuxt/kit": "^3",
+    "@nuxt/schema": "^3",
+    "esbuild": "*",
+    "rollup": "^3",
+    "vite": ">=3",
+    "valibot": "^1.4.2",
+    "webpack": "^4 || ^5"
+  },
+  "peerDependenciesMeta": {
+    "@farmfe/core": {
+      "optional": true
+    },
+    "@nuxt/kit": {
+      "optional": true
+    },
+    "@nuxt/schema": {
+      "optional": true
+    },
+    "esbuild": {
+      "optional": true
+    },
+    "rollup": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    },
+    "webpack": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@11.20.0"
+}

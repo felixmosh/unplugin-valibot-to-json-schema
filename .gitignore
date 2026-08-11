@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.*
+
+# Build output
+dist
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Coverage directory used by tools like istanbul
+coverage
+.nyc_output
+
+# dotenv environment variables file
+.env
+
+# TypeScript declaration files
+*.tsbuildinfo
+
+# IDE
+.idea
+.vscode
+
+# Output of 'npm pack'
+*.tgz
