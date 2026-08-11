@@ -113,14 +113,14 @@
     "webpack": "^5.109.2"
   },
   "peerDependencies": {
-    "@valibot/to-json-schema": "^1.7.1",
     "@farmfe/core": ">=1",
     "@nuxt/kit": "^3",
     "@nuxt/schema": "^3",
+    "@valibot/to-json-schema": "^1.7.1",
     "esbuild": "*",
     "rollup": "^3",
-    "vite": ">=3",
     "valibot": "^1.4.2",
+    "vite": ">=3",
     "webpack": "^4 || ^5"
   },
   "peerDependenciesMeta": {
@@ -149,5 +149,5 @@
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@11.20.0"
+  "packageManager": "pnpm@11.21.0"
 }
