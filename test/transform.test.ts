@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { transformValibotJsonSchema } from '../src/lib/transform';
 
 describe('transformValibotJsonSchema', () => {
@@ -97,5 +97,79 @@ const def = {
     expect(result?.code).toContain('"$schema": "https://json-schema.org/draft/2020-12/schema"');
     expect(result?.code).toContain('"id"');
     expect(result?.code).toContain('"type": "integer"');
+  });
+
+  it('reports an error and leaves the call unchanged when conversion fails', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await transformValibotJsonSchema(
+      `
+import { toJsonSchema } from '@valibot/to-json-schema';
+import * as v from 'valibot';
+
+const schema = v.pipe(v.string(), v.creditCard());
+
+const def = {
+  schema: toJsonSchema(schema),
+};
+`,
+      '/project/src/credit-card.ts'
+    );
+
+    expect(error).toHaveBeenCalledOnce();
+    expect(error.mock.calls[0][0]).toContain('/project/src/credit-card.ts');
+    expect(error.mock.calls[0][0]).toContain('left unchanged');
+    expect(result).toBeNull();
+    error.mockRestore();
+  });
+
+  it('keeps the import and fails safely when only some calls fail', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await transformValibotJsonSchema(
+      `
+import { toJsonSchema } from '@valibot/to-json-schema';
+import * as v from 'valibot';
+
+const invalid = v.pipe(v.string(), v.creditCard());
+
+const def = {
+  invalid: toJsonSchema(invalid),
+  valid: toJsonSchema(v.object({ ok: v.string() })),
+};
+`,
+      '/project/src/mixed.ts'
+    );
+
+    expect(error).toHaveBeenCalledOnce();
+    expect(result?.code).toContain('"ok"');
+    expect(result?.code).toContain('"type": "string"');
+    expect(result?.code).toContain('toJsonSchema(invalid)');
+    expect(result?.code).toContain("from '@valibot/to-json-schema'");
+    error.mockRestore();
+  });
+
+  it('reports each failing toJsonSchema call independently', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await transformValibotJsonSchema(
+      `
+import { toJsonSchema } from '@valibot/to-json-schema';
+import * as v from 'valibot';
+
+const def = {
+  first: toJsonSchema(v.pipe(v.string(), v.creditCard())),
+  middle: toJsonSchema(v.object({ ok: v.string() })),
+  last: toJsonSchema(v.pipe(v.string(), v.check((value: string) => value === 'valid'))),
+};
+`,
+      '/project/src/multi-fail.ts'
+    );
+
+    expect(error).toHaveBeenCalledTimes(2);
+    expect(result?.code).toContain('"ok"');
+    expect(result?.code).toContain("toJsonSchema(v.pipe(v.string(), v.creditCard()))");
+    expect(result?.code).toContain("toJsonSchema(v.pipe(v.string(), v.check((value: string) => value === 'valid')))");
+    error.mockRestore();
   });
 });

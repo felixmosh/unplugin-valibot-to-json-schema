@@ -60,6 +60,8 @@ export async function transformValibotJsonSchema(
   }
 
   const replacements: { start: number; end: number; value: string }[] = [];
+  const replacedToJsonSchemaLocals = new Set<string>();
+  const failedToJsonSchemaLocals = new Set<string>();
 
   walkWithAncestors(program, (node, ancestors) => {
     if (node.type !== 'CallExpression') {
@@ -74,16 +76,28 @@ export async function transformValibotJsonSchema(
     const schemaArg = toJsonSchemaArgs[0];
 
     if (!schemaArg) {
-      throw new Error(`toJsonSchema call without a schema argument cannot be compiled in ${id}`);
+      failedToJsonSchemaLocals.add(node.callee.name);
+      reportTransformError(id, node, new Error('toJsonSchema call without a schema argument'));
+      return;
     }
 
-    const jsonSchema = evaluateSchema(
-      code,
-      id,
-      toJsonSchemaArgs,
-      getAvailableBindings(program, node, ancestors),
-      getImportBindings(program)
-    );
+    let jsonSchema: unknown;
+
+    try {
+      jsonSchema = evaluateSchema(
+        code,
+        id,
+        toJsonSchemaArgs,
+        getAvailableBindings(program, node, ancestors),
+        getImportBindings(program)
+      );
+    } catch (error) {
+      failedToJsonSchemaLocals.add(node.callee.name);
+      reportTransformError(id, node, error);
+      return;
+    }
+
+    replacedToJsonSchemaLocals.add(node.callee.name);
     replacements.push({
       start: node.start,
       end: node.end,
@@ -101,12 +115,24 @@ export async function transformValibotJsonSchema(
     magicString.overwrite(replacement.start, replacement.end, replacement.value);
   }
 
-  removeToJsonSchemaImportIfUnused(code, program, toJsonSchemaLocals, magicString);
+  removeToJsonSchemaImportIfUnused(code, program, replacedToJsonSchemaLocals, failedToJsonSchemaLocals, magicString);
 
   return {
     code: magicString.toString(),
     map: magicString.generateMap({ hires: true }),
   };
+}
+
+function reportTransformError(id: string, node: AstNode, error: unknown): void {
+  const location =
+    node.loc?.start !== undefined
+      ? `${node.loc.start.line}:${node.loc.start.column + 1}`
+      : 'unknown location';
+  const detail = error instanceof Error ? ` ${error.message}` : '';
+
+  console.error(
+    `[unplugin-valibot-to-json-schema] Failed to convert schema to JSON Schema at ${id}:${location}. The toJsonSchema call is left unchanged.${detail}`
+  );
 }
 
 function getToJsonSchemaLocals(program: AstNode): Set<string> {
@@ -363,7 +389,8 @@ function getNeededImportDeclarations(code: string, importBindings: ImportBinding
 function removeToJsonSchemaImportIfUnused(
   code: string,
   program: AstNode,
-  locals: Set<string>,
+  replacedLocals: Set<string>,
+  failedLocals: Set<string>,
   magicString: MagicString
 ): void {
   for (const node of program.body ?? []) {
@@ -372,7 +399,7 @@ function removeToJsonSchemaImportIfUnused(
     }
 
     const removableSpecifiers = node.specifiers?.filter((specifier: AstNode) =>
-      specifier.type === 'ImportSpecifier' && locals.has(specifier.local?.name)
+      specifier.type === 'ImportSpecifier' && replacedLocals.has(specifier.local?.name) && !failedLocals.has(specifier.local?.name)
     );
 
     if (removableSpecifiers.length === node.specifiers.length) {
