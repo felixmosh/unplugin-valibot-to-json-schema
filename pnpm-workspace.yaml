@@ -6,5 +6,4 @@ allowBuilds:
   core-js: true
   esbuild: true
 
-minimumReleaseAgeExclude:
-  - '@swc/*'
+minimumReleaseAge: 1440
